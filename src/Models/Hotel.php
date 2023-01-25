@@ -1,6 +1,6 @@
 <?php
 
-namespace Henriqes\XLR8\Models;
+namespace Henriques\XLR8\Models;
 
 class Hotel
 {
