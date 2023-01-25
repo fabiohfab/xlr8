@@ -1,8 +1,8 @@
 <?php
 
-namespace Henriqes\XLR8;
+namespace Henriques\XLR8;
 
-use Henriqes\XLR8\Models\Hotel;
+use Henriques\XLR8\Models\Hotel;
 
 class Search
 {
@@ -36,7 +36,7 @@ class Search
     private static function getSources()
     {
         $files = array();
-        $iterator = new \FilesystemIterator("./XLR8/sources");
+        $iterator = new \FilesystemIterator(dirname(__FILE__).'/sources');
         foreach($iterator as $entry) {
             if ($entry->isDir()) {
                 continue;
@@ -48,7 +48,7 @@ class Search
                 continue;
             }
 
-            $files[] = './XLR8/sources/'.$entry->getFilename();
+            $files[] = dirname(__FILE__).'/sources/'.$entry->getFilename();
         }
 
   
