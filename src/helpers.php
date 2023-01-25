@@ -1,6 +1,15 @@
 <?php
 
-function distance($latitude1, $longitude1, $latitude2, $longitude2)
+/**
+ * distance
+ *
+ * @param  mixed $latitude1
+ * @param  mixed $longitude1
+ * @param  mixed $latitude2
+ * @param  mixed $longitude2
+ * @return float
+ */
+function distance(float $latitude1, float $longitude1, float $latitude2, float $longitude2) : float
 {
     $p1 = deg2rad($latitude1);
     $p2 = deg2rad($latitude2);
