@@ -1,0 +1,21 @@
+{
+    "name": "henriques/xlr8",
+    "description": "xlr8 exercise",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Henriques\\XLR8\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Fábio Henriques",
+            "email": "fabiomchenriques@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
