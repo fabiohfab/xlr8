@@ -5,45 +5,56 @@ namespace Henriques\XLR8;
 use Henriques\XLR8\Models\Hotel;
 
 class Search
-{
-    public static function getNearbyHotels(float $latitude, float $longitude, String $orderBy = 'proximity')
+{    
+    /**
+     * getNearbyHotels
+     *
+     * @param  mixed $latitude
+     * @param  mixed $longitude
+     * @param  mixed $sortBy
+     * @return array
+     */
+    public static function getNearbyHotels(float $latitude, float $longitude, String $sortBy = 'proximity') : array
     {
-        $order = str_starts_with($orderBy, '-') ? 'desc' : 'asc';
-        $orderBy = str_starts_with($orderBy, '-') ? substr($orderBy, 1) : $orderBy;
+        // Get order by and order direction
+        $sortDirection = str_starts_with($sortBy, '-') ? -1 : 1;
+        $sortBy = str_starts_with($sortBy, '-') ? substr($sortBy, 1) : $sortBy;
 
+        // Load sources
         $hotels = self::loadSources($latitude, $longitude);
 
-        switch($order) {
-            case 'asc':
-                $hotels = $hotels->sortBy(function ($key) use ($orderBy) {
-                    return $key->toArray()[$orderBy];
-                });
-                break;
-            case 'desc':
-                $hotels = $hotels->sortByDesc(function ($key) use ($orderBy) {
-                    return $key->toArray()[$orderBy];
-                });
-                break;
-        }
+        // Sort hotels
+        usort($hotels, function($a, $b) use ($sortDirection, $sortBy) { 
+            $compareValue = $a->toArray()[$sortBy] <=> $b->toArray()[$sortBy];
+            return $sortDirection * $compareValue; 
+        });
        
-        return $hotels->values()->map(function($i) {
+        // Return the sorted array
+        return array_map(function($i) {
             return $i->toString();
-        })->toArray();
+        }, $hotels);
     }
-
     
-
-    private static function getSources()
+    /**
+     * getSources
+     *
+     * @return array
+     */
+    private static function getSources() : array
     {
         $files = array();
+
+        // Find valid sources in sources folder
         $iterator = new \FilesystemIterator(dirname(__FILE__).'/sources');
         foreach($iterator as $entry) {
+
+            // Ignore sub directories
             if ($entry->isDir()) {
                 continue;
             }
             
+            // Only json files will be considered
             $extension = $entry->getExtension();
-
             if($extension != 'json') {
                 continue;
             }
@@ -54,32 +65,58 @@ class Search
   
         return $files;
     }
-
-    private static function loadSources(float $latitude, float $longitude)
+    
+    /**
+     * loadSources
+     *
+     * @param  mixed $latitude
+     * @param  mixed $longitude
+     * @return Hotel[]
+     */
+    private static function loadSources(float $latitude, float $longitude) : array
     {
         $sources = [];
-        foreach (self::getSources() as $file) {
-            $data = file_get_contents($file);
 
+        // Get valid sources
+        foreach (self::getSources() as $file) {
+
+            // Parse each file
+            $data = file_get_contents($file);
+            
             $source = self::parseSource(json_decode($data, true)['message'], $latitude, $longitude);
 
             $sources = array_merge($sources, $source);
         }
 
-        return collect($sources);
+        return $sources;
     }
-
-    private static function parseSource(array $items, float $latitude, float $longitude)
+    
+    /**
+     * parseSource
+     *
+     * @param  mixed $items
+     * @param  mixed $latitude
+     * @param  mixed $longitude
+     * @return Hotel[]
+     */
+    private static function parseSource(array $items, float $latitude, float $longitude) : array
     {
         $parsed = [];
 
+        // Iterate over each item and create a Hotel instance
         foreach($items as $item) {
-            $distance = distance(
-                $latitude, $longitude,
-                (float) $item[1], (float) $item[2]
-            );
-            
+            // Only items with exactly four characteristics will be considered
+            // 1 - Hotel name
+            // 2 - latitude
+            // 3 - longitude
+            // 4 - price per night
             if(count($item) == 4) {
+                 // Caluclate the distance between the hotel and the given coordinates
+                $distance = distance(
+                    $latitude, $longitude,
+                    (float) $item[1], (float) $item[2]
+                );
+
                 $item = new Hotel([
                     'name' => $item[0],
                     'latitude' => (float) $item[1],

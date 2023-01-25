@@ -2,6 +2,9 @@
 
 namespace Henriques\XLR8\Models;
 
+/**
+ * Hotel
+ */
 class Hotel
 {
 
@@ -10,7 +13,13 @@ class Hotel
     protected $longitude;
     protected $proximity;
     protected $pricepernight;
-
+    
+    /**
+     * __construct
+     *
+     * @param  mixed $entity
+     * @return void
+     */
     public function __construct(array $entity = null)
     {
         $this->name = $entity["name"];
@@ -19,36 +28,59 @@ class Hotel
         $this->proximity = $entity["proximity"];
         $this->pricepernight = $entity["pricepernight"];
     }
-
-    public function name()
+    
+    /**
+     * name
+     *
+     * @return String
+     */
+    public function name() : String
     {
         return $this->name;
     }
-
-    public function latitude()
+    
+    /**
+     * latitude
+     *
+     * @return float
+     */
+    public function latitude() : float
     {
         return $this->latitude;
-    }
-    public function longitude()
+    }    
+
+    /**
+     * longitude
+     *
+     * @return float
+     */
+    public function longitude() : float
     {
         return $this->longitude;
     }
-    public function proximity($decimalPlaces = 0)
+        
+    /**
+     * proximity
+     *
+     * @param  mixed $decimalPlaces
+     * @return float
+     */
+    public function proximity(int $decimalPlaces = 0) : float
     {
         return round($this->proximity, $decimalPlaces);
     }
-    public function pricepernight()
+
+    public function pricepernight() : float
     {
         return $this->pricepernight;
     }
-
-
-    public function get()
-    {
-        return 'teste';
-    }
-
-    public function toArray()
+    
+    /**
+     * toArray
+     *
+     * @return array
+     */
+    public function toArray() : array
     {
         return [
            "name" => $this->name(),
@@ -58,13 +90,23 @@ class Hotel
            "pricepernight" => $this->pricepernight(),
         ];
     }
-
-    public function toString()
+    
+    /**
+     * toString
+     *
+     * @return String
+     */
+    public function toString() : String
     {
         return $this->name().', '.$this->proximity(2).' Km, '.$this->pricepernight().'€';
     }
-
-    public function __toString()
+    
+    /**
+     * __toString
+     *
+     * @return String
+     */
+    public function __toString() : String
     {
         return $this->toString();
     }
